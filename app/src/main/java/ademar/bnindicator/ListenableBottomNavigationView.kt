@@ -4,16 +4,14 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
 class ListenableBottomNavigationView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-) : BottomNavigationView(context, attrs), NavigationBarView.OnItemSelectedListener {
+) : BottomNavigationView(context, attrs), OnItemSelectedListener {
 
-    private val onNavigationItemSelectedListeners =
-        mutableListOf<OnItemSelectedListener>()
+    private val onNavigationItemSelectedListeners = mutableListOf<OnItemSelectedListener>()
 
     init {
         super.setOnItemSelectedListener(this)

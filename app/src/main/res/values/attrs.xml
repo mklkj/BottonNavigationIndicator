@@ -2,8 +2,9 @@
 <resources>
 
     <declare-styleable name="BottomNavigationViewIndicator">
-        <attr name="targetBottomNavigation" format="reference"/>
-        <attr name="clipableBackground" format="reference|color"/>
+        <attr name="targetBottomNavigation" format="reference" />
+        <attr name="clipableBackground" format="reference|color" />
+        <attr name="indicatorMaxWidth" format="dimension" />
     </declare-styleable>
 
 </resources>

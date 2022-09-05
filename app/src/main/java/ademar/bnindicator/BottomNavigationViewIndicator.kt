@@ -1,10 +1,11 @@
 package ademar.bnindicator
 
+import ademar.bnindicator.R.styleable.*
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator.ofInt
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.Color.TRANSPARENT
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -21,6 +22,8 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
+    private val maxWidth: Int
+
     private val targetId: Int
     private var target: BottomNavigationMenuView? = null
 
@@ -33,15 +36,22 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
     init {
         if (attrs == null) {
             targetId = NO_ID
-            backgroundDrawable = ColorDrawable(Color.TRANSPARENT)
+            backgroundDrawable = ColorDrawable(TRANSPARENT)
+            maxWidth = 0
         } else {
-            with(context.obtainStyledAttributes(attrs, R.styleable.BottomNavigationViewIndicator)) {
-                targetId = getResourceId(R.styleable.BottomNavigationViewIndicator_targetBottomNavigation, NO_ID)
-                val clipableId = getResourceId(R.styleable.BottomNavigationViewIndicator_clipableBackground, NO_ID)
+            with(context.obtainStyledAttributes(attrs, BottomNavigationViewIndicator)) {
+                targetId =
+                    getResourceId(BottomNavigationViewIndicator_targetBottomNavigation, NO_ID)
+                val clipableId =
+                    getResourceId(BottomNavigationViewIndicator_clipableBackground, NO_ID)
+                maxWidth = getDimensionPixelSize(BottomNavigationViewIndicator_indicatorMaxWidth, 0)
+
                 backgroundDrawable = if (clipableId != NO_ID) {
-                    getDrawable(context, clipableId) ?: ColorDrawable(Color.TRANSPARENT)
+                    getDrawable(context, clipableId) ?: ColorDrawable(TRANSPARENT)
                 } else {
-                    ColorDrawable(getColor(R.styleable.BottomNavigationViewIndicator_clipableBackground, Color.TRANSPARENT))
+                    ColorDrawable(
+                        getColor(BottomNavigationViewIndicator_clipableBackground, TRANSPARENT)
+                    )
                 }
                 recycle()
             }
@@ -50,8 +60,9 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        if (targetId == NO_ID) return attachedError("invalid target id $targetId, did you set the app:targetBottomNavigation attribute?")
-        val parentView = parent as? View ?: return attachedError("Impossible to find the view using $parent")
+        if (targetId == NO_ID) return attachedError("Invalid target id $targetId, did you set the app:targetBottomNavigation attribute?")
+        val parentView =
+            parent as? View ?: return attachedError("Impossible to find the view using $parent")
 
         val child = parentView.findViewById<View?>(targetId)
         if (child !is ListenableBottomNavigationView) return attachedError("Invalid view $child, the app:targetBottomNavigation has to be n ListenableBottomNavigationView")
@@ -86,8 +97,11 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
             if (childCount < 1 || index >= childCount) return
             val reference = getChildAt(index)
 
-            val start = reference.left + left
-            val end = reference.right + left
+            val referenceWidth = reference.width
+            val horizontalMargin = ((referenceWidth - maxWidth) / 2f).toInt()
+
+            val start = reference.left + left + horizontalMargin
+            val end = reference.right + left - horizontalMargin
 
             backgroundDrawable.setBounds(left, top, right, bottom)
             val newRect = Rect(start, 0, end, height)
@@ -99,10 +113,10 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         animator?.cancel()
         animator = AnimatorSet().also {
             it.playTogether(
-                    ofInt(this, "rectLeft", this.rect.left, rect.left),
-                    ofInt(this, "rectRight", this.rect.right, rect.right),
-                    ofInt(this, "rectTop", this.rect.top, rect.top),
-                    ofInt(this, "rectBottom", this.rect.bottom, rect.bottom)
+                ofInt(this, "rectLeft", this.rect.left, rect.left),
+                ofInt(this, "rectRight", this.rect.right, rect.right),
+                ofInt(this, "rectTop", this.rect.top, rect.top),
+                ofInt(this, "rectBottom", this.rect.bottom, rect.bottom)
             )
             it.interpolator = FastOutSlowInInterpolator()
             it.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
@@ -115,9 +129,15 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         postInvalidate()
     }
 
-    @Keep fun setRectLeft(left: Int) = updateRect(rect.apply { this.left = left })
-    @Keep fun setRectRight(right: Int) = updateRect(rect.apply { this.right = right })
-    @Keep fun setRectTop(top: Int) = updateRect(rect.apply { this.top = top })
-    @Keep fun setRectBottom(bottom: Int) = updateRect(rect.apply { this.bottom = bottom })
+    @Keep
+    fun setRectLeft(left: Int) = updateRect(rect.apply { this.left = left })
 
+    @Keep
+    fun setRectRight(right: Int) = updateRect(rect.apply { this.right = right })
+
+    @Keep
+    fun setRectTop(top: Int) = updateRect(rect.apply { this.top = top })
+
+    @Keep
+    fun setRectBottom(bottom: Int) = updateRect(rect.apply { this.bottom = bottom })
 }
