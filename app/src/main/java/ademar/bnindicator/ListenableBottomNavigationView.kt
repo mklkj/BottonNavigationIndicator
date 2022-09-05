@@ -4,37 +4,38 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.BottomNavigationView.OnNavigationItemSelectedListener
+import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
 class ListenableBottomNavigationView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-) : BottomNavigationView(context, attrs, defStyleAttr), OnNavigationItemSelectedListener {
+    context: Context,
+    attrs: AttributeSet? = null,
+) : BottomNavigationView(context, attrs), NavigationBarView.OnItemSelectedListener {
 
-    private val onNavigationItemSelectedListeners = mutableListOf<OnNavigationItemSelectedListener>()
+    private val onNavigationItemSelectedListeners =
+        mutableListOf<OnItemSelectedListener>()
 
     init {
-        super.setOnNavigationItemSelectedListener(this)
+        super.setOnItemSelectedListener(this)
     }
 
-    override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
+    override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
         if (listener != null) addOnNavigationItemSelectedListener(listener)
     }
 
-    fun addOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener) {
-        onNavigationItemSelectedListeners.add(listener)
-    }
-
     fun addOnNavigationItemSelectedListener(listener: (Int) -> Unit) {
-        addOnNavigationItemSelectedListener(OnNavigationItemSelectedListener {
+        addOnNavigationItemSelectedListener(OnItemSelectedListener {
             for (i in 0 until menu.size()) if (menu.getItem(i) == it) listener(i)
             false
         })
     }
 
+    fun addOnNavigationItemSelectedListener(listener: OnItemSelectedListener) {
+        onNavigationItemSelectedListeners.add(listener)
+    }
+
     override fun onNavigationItemSelected(item: MenuItem) = onNavigationItemSelectedListeners
-            .map { it.onNavigationItemSelected(item) }
-            .fold(false) { acc, it -> acc || it }
+        .map { it.onNavigationItemSelected(item) }
+        .fold(false) { acc, it -> acc || it }
 
 }

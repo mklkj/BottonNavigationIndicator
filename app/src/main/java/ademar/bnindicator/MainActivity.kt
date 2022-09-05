@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = findViewById(nav_view)
         val textMessage = findViewById<TextView>(message)
 
-        navView.setOnNavigationItemSelectedListener {
+        navView.setOnItemSelectedListener {
             when (it.itemId) {
                 navigation_home -> textMessage.setText(title_home)
                 navigation_dashboard -> textMessage.setText(title_dashboard)

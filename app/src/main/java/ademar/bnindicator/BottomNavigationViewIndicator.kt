@@ -1,14 +1,15 @@
 package ademar.bnindicator
 
-import ademar.bnindicator.R.styleable.*
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator.ofInt
 import android.content.Context
-import android.graphics.*
-import android.graphics.drawable.*
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.LOLLIPOP
-import android.util.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.annotation.Keep
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
@@ -16,10 +17,9 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 
 class BottomNavigationViewIndicator @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+    context: Context,
+    attrs: AttributeSet? = null,
+) : View(context, attrs) {
 
     private val targetId: Int
     private var target: BottomNavigationMenuView? = null
@@ -35,13 +35,13 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
             targetId = NO_ID
             backgroundDrawable = ColorDrawable(Color.TRANSPARENT)
         } else {
-            with(context.obtainStyledAttributes(attrs, BottomNavigationViewIndicator)) {
-                targetId = getResourceId(BottomNavigationViewIndicator_targetBottomNavigation, NO_ID)
-                val clipableId = getResourceId(BottomNavigationViewIndicator_clipableBackground, NO_ID)
+            with(context.obtainStyledAttributes(attrs, R.styleable.BottomNavigationViewIndicator)) {
+                targetId = getResourceId(R.styleable.BottomNavigationViewIndicator_targetBottomNavigation, NO_ID)
+                val clipableId = getResourceId(R.styleable.BottomNavigationViewIndicator_clipableBackground, NO_ID)
                 backgroundDrawable = if (clipableId != NO_ID) {
                     getDrawable(context, clipableId) ?: ColorDrawable(Color.TRANSPARENT)
                 } else {
-                    ColorDrawable(getColor(BottomNavigationViewIndicator_clipableBackground, Color.TRANSPARENT))
+                    ColorDrawable(getColor(R.styleable.BottomNavigationViewIndicator_clipableBackground, Color.TRANSPARENT))
                 }
                 recycle()
             }
@@ -52,13 +52,15 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         super.onAttachedToWindow()
         if (targetId == NO_ID) return attachedError("invalid target id $targetId, did you set the app:targetBottomNavigation attribute?")
         val parentView = parent as? View ?: return attachedError("Impossible to find the view using $parent")
+
         val child = parentView.findViewById<View?>(targetId)
         if (child !is ListenableBottomNavigationView) return attachedError("Invalid view $child, the app:targetBottomNavigation has to be n ListenableBottomNavigationView")
+
         for (i in 0 until child.childCount) {
             val subView = child.getChildAt(i)
             if (subView is BottomNavigationMenuView) target = subView
         }
-        if (SDK_INT >= LOLLIPOP) elevation = child.elevation
+        elevation = child.elevation
         child.addOnNavigationItemSelectedListener { updateRectByIndex(it, true) }
         post { updateRectByIndex(index, false) }
     }
