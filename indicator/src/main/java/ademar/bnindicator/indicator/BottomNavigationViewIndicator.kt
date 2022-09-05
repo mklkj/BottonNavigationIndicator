@@ -133,6 +133,18 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         postInvalidate()
     }
 
+    override fun invalidate() {
+        updateRectByIndex(index, false)
+        super.invalidate()
+    }
+
+    override fun setVisibility(visibility: Int) {
+        if (visibility == VISIBLE) {
+            invalidate()
+        }
+        super.setVisibility(visibility)
+    }
+
     @Keep
     fun setRectLeft(left: Int) = updateRect(rect.apply { this.left = left })
 
