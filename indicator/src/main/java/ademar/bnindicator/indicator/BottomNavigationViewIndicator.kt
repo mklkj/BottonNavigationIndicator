@@ -91,6 +91,10 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         backgroundDrawable.draw(canvas)
     }
 
+    fun onItemSelected(index: Int) {
+        updateRectByIndex(index, true)
+    }
+
     private fun updateRectByIndex(index: Int, animated: Boolean) {
         this.index = index
         target?.apply {
