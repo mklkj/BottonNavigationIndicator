@@ -139,7 +139,7 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
     }
 
     override fun setVisibility(visibility: Int) {
-        if (visibility == VISIBLE) {
+        if (visibility == VISIBLE && this.visibility != visibility) {
             invalidate()
         }
         super.setVisibility(visibility)
