@@ -1,4 +1,4 @@
-package ademar.bnindicator
+package ademar.bnindicator.indicator
 
 import android.content.Context
 import android.util.AttributeSet

@@ -1,6 +1,6 @@
-package ademar.bnindicator
+package ademar.bnindicator.indicator
 
-import ademar.bnindicator.R.styleable.*
+import ademar.bnindicator.indicator.R.styleable.*
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator.ofInt
 import android.content.Context
