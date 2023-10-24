@@ -3,16 +3,17 @@ apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 
 android {
-    compileSdkVersion 32
+    namespace 'ademar.bnindicator'
+    compileSdk 34
     defaultConfig {
         applicationId "ademar.bnindicator"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdk 34
         versionCode 1
         versionName "1.0.0"
     }
     buildTypes {
-        all {
+        configureEach {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt")
@@ -22,9 +23,9 @@ android {
 
 dependencies {
     implementation project(":indicator")
-    implementation "androidx.appcompat:appcompat:1.5.0"
-    implementation "androidx.core:core-ktx:1.8.0"
-    implementation "com.google.android.material:material:1.6.1"
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation "com.google.android.material:material:1.10.0"
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
     implementation "androidx.vectordrawable:vectordrawable:1.1.0"
 }
