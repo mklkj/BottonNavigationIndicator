@@ -9,11 +9,15 @@ import android.graphics.Color.TRANSPARENT
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import androidx.annotation.Keep
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.os.BundleCompat
+import androidx.core.os.bundleOf
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 
@@ -133,16 +137,31 @@ class BottomNavigationViewIndicator @JvmOverloads constructor(
         postInvalidate()
     }
 
-    override fun invalidate() {
-        updateRectByIndex(index, false)
-        super.invalidate()
+    override fun setVisibility(visibility: Int) {
+        val originalVisibility = this.visibility
+        super.setVisibility(visibility)
+
+        if (originalVisibility != visibility) {
+            post { updateRectByIndex(index, false) }
+        }
     }
 
-    override fun setVisibility(visibility: Int) {
-        if (visibility == VISIBLE && this.visibility != visibility) {
-            invalidate()
+    override fun onSaveInstanceState(): Parcelable {
+        return bundleOf(
+            "superState" to super.onSaveInstanceState(),
+            "index" to index,
+        )
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state is Bundle && state.containsKey("index")) {
+            index = state.getInt("index")
+
+            val superState = BundleCompat.getParcelable(state, "superState", Parcelable::class.java)
+            super.onRestoreInstanceState(superState)
+        } else {
+            super.onRestoreInstanceState(state)
         }
-        super.setVisibility(visibility)
     }
 
     @Keep
